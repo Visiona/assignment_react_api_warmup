@@ -59,9 +59,6 @@ class AppContainer extends Component {
     e.preventDefault()
     const form = e.target
     const body = serialize(form, {hash: true})
-    console.log('lets check body')
-    console.log(body.id)
-    console.log(body)
 
     const headers = new Headers()
     headers.append('Content-Type', 'application/json')
@@ -77,8 +74,6 @@ class AppContainer extends Component {
       options.method = 'PATCH';
       url += '/' + body.id
     }
-    console.log(url)
-    console.log(options)
     this.setState({isFetching: true})
 
     fetch(url, options)
@@ -123,14 +118,6 @@ class AppContainer extends Component {
     })
   }
 
-  // openForm = (e, userId) = {
-  //   e.preventDefault()
-  //   const user = this.state.users.filter(user => user.id === userId )
-  //
-  //
-  //   onEditUser(e, userId)
-  // }
-
   onEditUser = (e, userId) => {
     e.preventDefault()
     const getUser = this.state.users.filter(user => user.id === userId )
@@ -138,45 +125,6 @@ class AppContainer extends Component {
     this.setState({
       currentUser: getUser[0]
     })
-
-    //
-    // // const body = serialize(userForm, {hash: true})
-    // const body = userForm[0];
-    // console.log(body)
-    //
-    // const headers = new Headers();
-    // headers.append('Content-Type', 'application/json')
-    //
-    // // const options = {
-    // //   headers,
-    // //   method: 'PATCH',
-    // //   body: JSON.stringify(body)
-    // // }
-    //
-    // const options = {
-    //   headers,
-    //   method: 'GET',
-    //   body: JSON.stringify(body)
-    // }
-    //
-    // this.setState({ isFetching: true })
-    //
-    // fetch('https://reqres.in/api/users/' + userId, options)
-    // .then( (response) => {
-    //   if (!response.ok) {
-    //     throw new Error(`${response.state} ${response.stateText}`)
-    //   }
-    //   return response.json()
-    // })
-    // .then( (json) => {
-    //   })
-    // .catch( (error) => {
-    //   console.log(error)
-    //   this.setState({
-    //     isFetching: false,
-    //     error
-    //   })
-    // })
 
   }
 
