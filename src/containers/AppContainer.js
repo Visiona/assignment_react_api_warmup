@@ -8,6 +8,12 @@ class AppContainer extends Component {
     super()
     this.state = {
       users: [],
+      currentUser: {
+        first_name: '',
+        last_name: '',
+        avatar: '',
+        id: ''
+      },
       isFetching: false,
       error: null
     }
@@ -25,24 +31,57 @@ class AppContainer extends Component {
       })
   }
 
+  onChangeFirstName = (e) => {
+    this.setState({
+      currentUser: {
+        first_name: e.target.value,
+      }
+    })
+  }
+
+  onChangeLastName = (e) => {
+    this.setState({
+      currentUser: {
+        last_name: e.target.value,
+      }
+    })
+  }
+
+  onChangeAvatar = (e) => {
+    this.setState({
+      currentUser: {
+        avatar: e.target.value,
+      }
+    })
+  }
+
   onAddUser =(e) => {
     e.preventDefault()
     const form = e.target
     const body = serialize(form, {hash: true})
+    console.log('lets check body')
+    console.log(body.id)
     console.log(body)
 
     const headers = new Headers()
     headers.append('Content-Type', 'application/json')
+    let url = 'https://reqres.in/api/users'
 
-    const options = {
+    let options = {
       headers,
       method: 'POST',
       body: JSON.stringify(body)
     }
-
+    let userToUpdate = this.state.users.filter(user => parseInt(user.id) === parseInt(body.id) )
+    if ( this.state.users.some( user => parseInt(user.id) === parseInt(body.id) ) ) {
+      options.method = 'PATCH';
+      url += '/' + body.id
+    }
+    console.log(url)
+    console.log(options)
     this.setState({isFetching: true})
 
-    fetch('https://reqres.in/api/users', options)
+    fetch(url, options)
     .then((response) => {
       if (!response.ok) {
         throw new Error(`${response.status} ${response.statusText}`)
@@ -50,10 +89,30 @@ class AppContainer extends Component {
       return response.json()
     })
     .then((json) => {
-      this.setState({
-        isFetching: false,
-        users: [...this.state.users, json]
-      }, ()=> {form.reset()})
+      if (options.method == 'POST') {
+        this.setState({
+          isFetching: false,
+          users: [...this.state.users, json],
+          currentUser: {
+            first_name: '',
+            last_name: '',
+            avatar: '',
+            id: ''
+          },
+        }, ()=> {form.reset()})
+      } else {
+        this.state.users.pop(userToUpdate)
+        this.setState({
+          isFetching: false,
+          users: [...this.state.users, json],
+          currentUser: {
+            first_name: '',
+            last_name: '',
+            avatar: '',
+            id: ''
+          },
+        }, ()=> {form.reset()})
+      }
     })
     .catch((error) => {
       console.log(error)
@@ -64,9 +123,112 @@ class AppContainer extends Component {
     })
   }
 
+  // openForm = (e, userId) = {
+  //   e.preventDefault()
+  //   const user = this.state.users.filter(user => user.id === userId )
+  //
+  //
+  //   onEditUser(e, userId)
+  // }
+
+  onEditUser = (e, userId) => {
+    e.preventDefault()
+    const getUser = this.state.users.filter(user => user.id === userId )
+
+    this.setState({
+      currentUser: getUser[0]
+    })
+
+    //
+    // // const body = serialize(userForm, {hash: true})
+    // const body = userForm[0];
+    // console.log(body)
+    //
+    // const headers = new Headers();
+    // headers.append('Content-Type', 'application/json')
+    //
+    // // const options = {
+    // //   headers,
+    // //   method: 'PATCH',
+    // //   body: JSON.stringify(body)
+    // // }
+    //
+    // const options = {
+    //   headers,
+    //   method: 'GET',
+    //   body: JSON.stringify(body)
+    // }
+    //
+    // this.setState({ isFetching: true })
+    //
+    // fetch('https://reqres.in/api/users/' + userId, options)
+    // .then( (response) => {
+    //   if (!response.ok) {
+    //     throw new Error(`${response.state} ${response.stateText}`)
+    //   }
+    //   return response.json()
+    // })
+    // .then( (json) => {
+    //   })
+    // .catch( (error) => {
+    //   console.log(error)
+    //   this.setState({
+    //     isFetching: false,
+    //     error
+    //   })
+    // })
+
+  }
+
+
+
+
+  onDeleteUser = (e, delId) => {
+    e.preventDefault()
+    const headers = new Headers()
+    headers.append('Content-Type', 'application/json')
+
+    const arrAfterDeletion = this.state.users.filter(user => user.id !== delId )
+    const options = {
+      headers,
+      method: 'DELETE'
+    }
+
+    this.setState({ isFetching: true })
+
+    fetch('https://reqres.in/api/users/' + delId, options)
+    .then( (response) => {
+      if (!response.ok) {
+        throw new Error(`${response.status} ${response.statusText}`)
+      }
+      return response.json
+    }).then((json) => {
+      this.setState({
+        users: arrAfterDeletion,
+        isFetching: false
+      })
+    })
+    .catch((error) => {
+      console.log(error)
+      this.setState({
+        isFetching: false,
+        error
+      })
+    })
+
+  }
+
+
   render() {
     return (
-      <App onAddUser={this.onAddUser} {...this.state} />
+      <App onAddUser={this.onAddUser}
+          onEditUser={this.onEditUser}
+          onDeleteUser={this.onDeleteUser}
+          onChangeFirstName={this.onChangeFirstName}
+          onChangeLastName={this.onChangeLastName}
+          onChangeAvatar={this.onChangeAvatar}
+            {...this.state}
+      />
     )
   }
 }

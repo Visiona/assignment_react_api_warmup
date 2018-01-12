@@ -5,7 +5,7 @@ import Button from './elements/Button'
 import Alert from './elements/Alert'
 import Showable from './elements/Showable'
 
-const UserForm = ({onSubmit, error}) => (
+const UserForm = ({onSubmit, currentUser, onChangeFirstName, onChangeLastName, onChangeAvatar, error}) => (
   <form className="container" onSubmit={onSubmit} >
     <h1>Add New User</h1>
 
@@ -16,13 +16,14 @@ const UserForm = ({onSubmit, error}) => (
     </Showable>
 
     <InputGroup name="first_name" labelText="First Name">
-      <Input name="first_name" />
+      <Input name="first_name" value={ currentUser.first_name } onChange={onChangeFirstName} />
     </InputGroup>
     <InputGroup name="last_name" labelText="Last Name">
-      <Input name="last_name" />
+      <Input name="last_name" value={ currentUser.last_name } onChange={onChangeLastName}/>
     </InputGroup>
     <InputGroup name="avatar" labelText="Photo Link">
-      <Input name="avatar" />
+      <Input name="avatar" value={ currentUser.avatar } onChange={onChangeAvatar}/>
+      <Input name="id" value={ currentUser.id } hidden='true'/>
     </InputGroup>
     <Button type="submit" color="primary">
       Save User
