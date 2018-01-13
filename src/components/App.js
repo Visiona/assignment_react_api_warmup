@@ -4,7 +4,7 @@ import UserList from './UserList';
 import UserForm from './UserForm'
 
 
-const App =({users, isFetching, error, onAddUser, onEditUser, onDeleteUser, currentUser, onChangeFirstName, onChangeLastName, onChangeAvatar}) => (
+const App =({users, isFetching, error, onAddOrUpdateUser, onEditUser, onDeleteUser, onChange, currentUser}) => (
   <div className="App">
     <JumbotronFluid
       heading='User CRUD'
@@ -13,7 +13,7 @@ const App =({users, isFetching, error, onAddUser, onEditUser, onDeleteUser, curr
     <UserList users={users} isFetching={isFetching} onEditUser={onEditUser} onDeleteUser={onDeleteUser} />
     <br />
     <br />
-    <UserForm onSubmit={onAddUser} error={error} currentUser={currentUser} onEditUser={onEditUser} onChangeFirstName={onChangeFirstName} onChangeLastName={onChangeLastName} onChangeAvatar={onChangeAvatar} />
+    <UserForm onSubmit={onAddOrUpdateUser} error={error} currentUser={currentUser} onEditUser={onEditUser} onChange={onChange} />
     <br />
     <br />
   </div>

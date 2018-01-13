@@ -17,6 +17,8 @@ class AppContainer extends Component {
       isFetching: false,
       error: null
     }
+
+    this.onChange = this.onChange.bind(this)
   }
 
   componentDidMount() {
@@ -31,49 +33,32 @@ class AppContainer extends Component {
       })
   }
 
-  onChangeFirstName = (e) => {
-    this.setState({
-      currentUser: {
-        first_name: e.target.value,
-      }
-    })
-  }
+  onChange = fieldName => e => this.setState({
+    currentUser: {
+      ...this.state.currentUser,
+      [fieldName]: e.target.value || this.state.currentUser.fieldName || '',
+    }
+  })
 
-  onChangeLastName = (e) => {
-    this.setState({
-      currentUser: {
-        last_name: e.target.value,
-      }
-    })
-  }
 
-  onChangeAvatar = (e) => {
-    this.setState({
-      currentUser: {
-        avatar: e.target.value,
-      }
-    })
-  }
-
-  onAddUser =(e) => {
-    e.preventDefault()
-    const form = e.target
+  onAddOrUpdateUser =(e) => {
+    e.preventDefault();
+    const form = e.target;
     const body = serialize(form, {hash: true})
 
     const headers = new Headers()
-    headers.append('Content-Type', 'application/json')
-    let url = 'https://reqres.in/api/users'
+    headers.append('Content-Type', 'application/json');
+    const method = body.id ? 'PATCH' : 'POST';
+    let url = 'https://reqres.in/api/users';
+    url += body.id ? `/${body.id}` : '';
 
-    let options = {
+    const options = {
       headers,
-      method: 'POST',
+      method,
       body: JSON.stringify(body)
     }
     let userToUpdate = this.state.users.filter(user => parseInt(user.id) === parseInt(body.id) )
-    if ( this.state.users.some( user => parseInt(user.id) === parseInt(body.id) ) ) {
-      options.method = 'PATCH';
-      url += '/' + body.id
-    }
+
     this.setState({isFetching: true})
 
     fetch(url, options)
@@ -84,7 +69,7 @@ class AppContainer extends Component {
       return response.json()
     })
     .then((json) => {
-      if (options.method == 'POST') {
+      if (method == 'POST') {
         this.setState({
           isFetching: false,
           users: [...this.state.users, json],
@@ -168,13 +153,16 @@ class AppContainer extends Component {
 
 
   render() {
+  const { users,
+      isFetching,
+      error,
+      currentUser
+    } = this.state;
     return (
-      <App onAddUser={this.onAddUser}
+      <App onAddOrUpdateUser={this.onAddOrUpdateUser}
           onEditUser={this.onEditUser}
           onDeleteUser={this.onDeleteUser}
-          onChangeFirstName={this.onChangeFirstName}
-          onChangeLastName={this.onChangeLastName}
-          onChangeAvatar={this.onChangeAvatar}
+          onChange={this.onChange}
             {...this.state}
       />
     )

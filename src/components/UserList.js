@@ -3,7 +3,7 @@ import UserCard from './UserCard'
 
 const UserList =({users, isFetching, onDeleteUser, onEditUser}) => {
   const userList = users.map((user) =>
-    <div className='user-box'>
+    <div className='user-box' key={user.id}>
       <UserCard user={user} key={user.id} />
       <div className="alert alert-info" role="alert">
         <a href="#" className="alert-link" key={user.id}  onClick={(e) => onEditUser(e, user.id)} >Edit</a>
